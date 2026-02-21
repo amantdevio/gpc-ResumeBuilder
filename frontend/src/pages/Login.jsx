@@ -141,11 +141,20 @@ const Login = () => {
                 <button type="submit" className="mt-2 w-full h-11 rounded-full text-white bg-green-500 hover:opacity-90 transition-opacity">
                     {state === "login" ? "Login" : (otpSent ? "Verify & Sign up" : "Send OTP")}
                 </button>
-                <p onClick={() => {
-                    setState(prev => prev === "login" ? "register" : "login");
-                    setOtpSent(false);
-                    setFormData({ name:'', email:'', password:'', otp:''});
-                }} className="text-gray-500 text-sm mt-3 mb-11">{state === "login" ? "Don't have an account?" : "Already have an account?"} <a href="#" className="text-green-500 hover:underline">click here</a></p>
+                <p className="text-gray-500 text-sm mt-3 mb-11">
+                    {state === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setState(prev => prev === "login" ? "register" : "login");
+                            setOtpSent(false);
+                            setFormData({ name:'', email:'', password:'', otp:''});
+                        }}
+                        className="text-green-500 hover:underline"
+                    >
+                        click here
+                    </button>
+                </p>
             </form>
     </div>
   )
