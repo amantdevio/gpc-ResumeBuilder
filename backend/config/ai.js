@@ -1,5 +1,8 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
+const ai = new OpenAI({
+    apiKey: process.env.GROQ_API_KEY,
+    baseURL: "https://api.groq.com/openai/v1",
+});
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-export default genAI;
+export default ai;

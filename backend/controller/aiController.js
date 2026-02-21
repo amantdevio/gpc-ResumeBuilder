@@ -1,5 +1,5 @@
 import Resume from "../models/Resume.js";
-import genAI from "../config/ai.js";
+import ai from "../config/ai.js";
 //controller for enhancing a resume's professional summary
 //POST: /api/ai/enhance-pro-sum
 
@@ -12,13 +12,21 @@ export const enhanceProfessionalSummary = async (req,res) => {
             return res.status(400).json({message:"Missing requied fields"})
         }
 
-        const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL});
+        const response = await ai.chat.completions.create({
+            model: process.env.OPENAI_MODEL,
+            messages:[
+                {
+                    role:"system",
+                    content:"You are expert in resume writing. Your task is to enhane the professional summary of a resume. The summary should be 1-2 sentences also highlighting key skills, experiene,and career objectives. Make it compelling and ATS_friendly and only return text no options or anything else."
+                },
+                {
+                    role:"user",
+                    content:userContent
+                }
+            ]
+        })
 
-        const prompt = `You are expert in resume writing. Your task is to enhane the professional summary of a resume. The summary should be 1-2 sentences also highlighting key skills, experiene,and career objectives. Make it compelling and ATS_friendly and only return text no options or anything else. Here is the professional summary: ${userContent}`;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const enhancedContent = response.text();
+        const enhancedContent = response.choices[0].message.content;
 
         return res.status(200).json({enhancedContent})
     } catch (error) {
@@ -37,13 +45,21 @@ export const enhanceJobDescription = async (req,res) => {
             return res.status(400).json({message:"Missing requied fields"})
         }
 
-        const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL});
+        const response = await ai.chat.completions.create({
+            model: process.env.OPENAI_MODEL,
+            messages:[
+                {
+                    role:"system",
+                    content:"You are expert in resume writing. Your task is to enhane the job description of a resume. The job description should be only in 1-2 sentences also highlighting key responsibilities and achievements. Use action verbs and quantifiale results where possile. Make it compelling and ATS_friendly and only return text no options or anything else."
+                },
+                {
+                    role:"user",
+                    content:userContent
+                }
+            ]
+        })
 
-        const prompt = `You are expert in resume writing. Your task is to enhane the job description of a resume. The job description should be only in 1-2 sentences also highlighting key responsibilities and achievements. Use action verbs and quantifiale results where possile. Make it compelling and ATS_friendly and only return text no options or anything else. Here is the job description: ${userContent}`;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const enhancedContent = response.text();
+        const enhancedContent = response.choices[0].message.content;
 
         return res.status(200).json({enhancedContent})
     } catch (error) {
