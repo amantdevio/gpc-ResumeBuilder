@@ -27,7 +27,7 @@ const Navbar = () => {
                 </div>
             </div>
             <div className='flex items-center justify-between gap-3'>
-                <p className='max'>Hi, {user?.name}</p>
+                <p className='max-w-32 truncate'>Hi, {user?.name}</p>
                 <button onClick={logoutUser} className='bg-green-500 text-slate-50 hover:bg-slate-50 hover:text-green-500 border border-gray-300 px-7 py-1.5 rounded-full active:scale-95 transition-all'>Logout</button>
             </div>
         </nav>

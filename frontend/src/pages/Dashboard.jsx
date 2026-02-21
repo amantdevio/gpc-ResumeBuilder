@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {FilePenLineIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloudIcon, UploadCloud, XIcon, LoaderCircleIcon, Globe2Icon} from 'lucide-react'
-import { dummyResumeData } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import api from '../configs/api';
@@ -22,7 +21,8 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  const loadAllResumes =async ()=>{
+  const loadAllResumes = useCallback(async ()=>{
+    if (!token) return;
     try {
          const {data} = await api.get('/api/users/resumes',{headers:{
         Authorization:token
@@ -32,7 +32,7 @@ const Dashboard = () => {
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)
     }
-  }
+  }, [token])
 
   const createResume=async (event) => {
     try {
@@ -99,8 +99,9 @@ const Dashboard = () => {
   }
 
   useEffect(()=>{
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAllResumes()
-  },[])
+  },[loadAllResumes])
 
   return (
     <div>
@@ -187,7 +188,7 @@ const Dashboard = () => {
                   )}</label>
                 <input type="file" name="" id="resume-input" accept=".pdf" hidden onChange={(e)=>setResume(e.target.files[0])}/>
               </div>
-              <button disales={isLoading} className=' flex justify-center items-center gap-2 w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors'>
+              <button disabled={isLoading || !resume} className=' flex justify-center items-center gap-2 w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed'>
                 {isLoading && <LoaderCircleIcon className='animate-spin size-4 text-white'/>}
                 {isLoading ? 'Uploading...':'Upload Resume'}
               </button>

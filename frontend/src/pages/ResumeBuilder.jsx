@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { dummyResumeData } from '../assets/assets'
-import { ArrowLeft, ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeClosed, EyeIcon, EyeOff, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share, Share2Icon, Sparkle, SparklesIcon, User } from 'lucide-react'
+import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeClosed, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkle, User } from 'lucide-react'
 import PersonalInfoForm from '../components/PersonalInfoForm'
 import ResumePriview from '../components/ResumePriview'
 import TemplateSelector from '../components/TemplateSelector'
 import ColorPicker from '../components/ColorPicker'
 import ProfessionalSummaryForm from '../components/ProfessionalSummaryForm'
-import Footer from '../components/home/Footer'
 import ExperienceForm from '../components/ExperienceForm'
 import EducationForm from '../components/EducationForm'
 import ProjectForm from '../components/ProjectForm'
@@ -32,7 +30,8 @@ const ResumeBuilder = () => {
     public:false
   })
 
-  const loadExistingResume =async () => {
+  const loadExistingResume = useCallback(async () => {
+    if (!token || !resumeId) return;
     try {
       const {data} = await api.get('/api/resumes/get/' + resumeId,{headers:{Authorization:token}})
       if(data.resume){
@@ -45,7 +44,7 @@ const ResumeBuilder = () => {
     } catch (error) {
       console.log(error.message);
     }
-  }
+  }, [token, resumeId])
 
   const [activeSectionIndex,setActiveSectionIndex]=useState(0);
   const [removeBackground,setRemoveBackground]=useState(false);
@@ -62,8 +61,9 @@ const ResumeBuilder = () => {
   const activeSection=sections[activeSectionIndex]
 
   useEffect(()=>{
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadExistingResume();
-  },[]);
+  },[loadExistingResume]);
 
 
   const changeResumeVisibility = async ()=>{
@@ -81,8 +81,10 @@ const ResumeBuilder = () => {
 
 
 const handleShare = async () => {
-  const frontendUrl = window.location.href.split('/app/')[0];
-  const resumeUrl = `${frontendUrl}/view/${resumeId}`;
+  const origin = window.location.origin;
+  const resumeUrl = window.location.hash
+    ? `${origin}/#/view/${resumeId}`
+    : `${origin}/view/${resumeId}`;
 
   try {
     if (navigator.share) {
@@ -168,7 +170,7 @@ const handleShare = async () => {
 
                 <div className='flex items-center'>
                   {activeSectionIndex !== 0 && (
-                    <button onClick={()=>setActiveSectionIndex((prevIndex)=>Math.max(prevIndex-1,0))} className='flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hoveer:bg-gray-50 transition-all' disabled={activeSectionIndex===0}>
+                    <button onClick={()=>setActiveSectionIndex((prevIndex)=>Math.max(prevIndex-1,0))} className='flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all' disabled={activeSectionIndex===0}>
                       <ChevronLeft className='size-4'/> Previous
                     </button>
                   )}

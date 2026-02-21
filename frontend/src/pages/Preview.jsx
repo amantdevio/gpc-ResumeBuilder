@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { dummyResumeData } from '../assets/assets';
 import ResumePriview from '../components/ResumePriview';
 import Loader from '../components/Loader';
-import { ArrowLeftIcon, FilePlus2, HomeIcon } from 'lucide-react';
+import { FilePlus2, HomeIcon } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import api from '../configs/api';
 
@@ -12,7 +11,7 @@ const Preview = () => {
   const [isLoading, setIsLoading]=useState(true)
   const [resumeData,setResumeData]=useState(null);
 
-  const loadResume=async () => {
+  const loadResume=useCallback(async () => {
     try {
       const token= localStorage.getItem('token');
       let response;
@@ -35,11 +34,11 @@ const Preview = () => {
     }finally{
       setIsLoading(false);
     }
-  }
+  }, [resumeId])
 
   useEffect(()=>{
     loadResume()
-  },[])
+  },[loadResume])
   return resumeData ? (
     <div className='bg-slate-100'>
       <div className='max-w-3xl mx-auto py-10'>
