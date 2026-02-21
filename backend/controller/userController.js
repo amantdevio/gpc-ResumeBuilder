@@ -54,6 +54,14 @@ export const sendRegisterOtp = async (req,res) => {
             console.error("OTP email send failed:", mailError.message);
         }
 
+        // In production, OTP must be delivered via email.
+        // Returning success without OTP blocks registration flow for real users.
+        if (!emailSent && process.env.NODE_ENV === "production") {
+            return res.status(500).json({
+                message: "OTP email send failed. Check SMTP settings and try again."
+            });
+        }
+
         return res.status(200).json({
             message: emailSent ? "OTP sent successfully" : "SMTP not configured. Use dev OTP",
             ...(process.env.NODE_ENV !== "production" ? { devOtp: otp } : {})

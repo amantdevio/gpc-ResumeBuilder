@@ -72,13 +72,20 @@ const Login = () => {
 
     React.useEffect(() => {
         const query = new URLSearchParams(location.search);
-        const urlState = query.get('state');
+        let urlState = query.get('state');
+
+        // HashRouter URLs can carry query in hash fragment: /#/app?state=register
+        if (!urlState && location.hash.includes('?')) {
+            const hashQuery = location.hash.split('?')[1] || '';
+            urlState = new URLSearchParams(hashQuery).get('state');
+        }
+
         if (urlState === "register" || urlState === "login") {
             setState(urlState);
         } else {
             setState("login");
         }
-    }, [location.search]);
+    }, [location.search, location.hash]);
 
     React.useEffect(()=>{
         if(state === "login"){
