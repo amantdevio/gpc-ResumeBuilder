@@ -4,12 +4,13 @@ import api from '../configs/api';
 import { useDispatch } from 'react-redux';
 import { login } from '../app/features/authSlice';
 import toast from 'react-hot-toast';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const dispatch = useDispatch();
-  const query=new URLSearchParams(window.location.search);
-  const urlState = query.get('state');
-  const [state, setState] = React.useState(urlState||"login")
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [state, setState] = React.useState("login")
   const [otpSent, setOtpSent] = React.useState(false);
 
     const [formData, setFormData] = React.useState({
@@ -38,9 +39,13 @@ const Login = () => {
                     email: formData.email,
                     otp: formData.otp
                 });
+                if (!data?.token || !data?.user) {
+                    throw new Error("Invalid server response. Check frontend API base URL.");
+                }
                 dispatch(login(data));
                 localStorage.setItem('token', data.token);
-                toast.success(data.message);
+                toast.success(data.message || "Registration successful");
+                navigate('/app', { replace: true });
                 return;
             }
 
@@ -48,9 +53,13 @@ const Login = () => {
                 email: formData.email,
                 password: formData.password
             });
+            if (!data?.token || !data?.user) {
+                throw new Error("Invalid server response. Check frontend API base URL.");
+            }
             dispatch(login(data));
             localStorage.setItem('token', data.token);
-            toast.success(data.message);
+            toast.success(data.message || "Login successful");
+            navigate('/app', { replace: true });
         } catch (error) {
             toast(error?.response?.data?.message||error.message);
         }
@@ -60,6 +69,16 @@ const Login = () => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
     }
+
+    React.useEffect(() => {
+        const query = new URLSearchParams(location.search);
+        const urlState = query.get('state');
+        if (urlState === "register" || urlState === "login") {
+            setState(urlState);
+        } else {
+            setState("login");
+        }
+    }, [location.search]);
 
     React.useEffect(()=>{
         if(state === "login"){

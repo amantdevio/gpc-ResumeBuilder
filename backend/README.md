@@ -26,9 +26,9 @@ PORT=3000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 
-OPENAI_API_KEY=your_ai_api_key
-OPENAI_BASE_URL=your_openai_compatible_base_url
-OPENAI_MODEL=your_model_name
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_BASE_URL=your_gemini_compatible_base_url
+GEMINI_MODEL=your_model_name
 
 SMTP_USER=your_email@example.com
 SMTP_PASS=your_email_app_password
