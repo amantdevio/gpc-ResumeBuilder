@@ -12,6 +12,7 @@ const Login = () => {
     const location = useLocation();
     const [state, setState] = React.useState("login")
   const [otpSent, setOtpSent] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     const [formData, setFormData] = React.useState({
         name: '',
@@ -23,6 +24,20 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
+            if (state === "register" && !otpSent && (!formData.name || !formData.email || !formData.password)) {
+                toast.error("Please fill name, email and password first.");
+                return;
+            }
+            if (state === "register" && otpSent && !formData.otp) {
+                toast.error("Please enter OTP.");
+                return;
+            }
+            if (state === "login" && (!formData.email || !formData.password)) {
+                toast.error("Please fill email and password.");
+                return;
+            }
+
+            setIsSubmitting(true);
             if(state === "register"){
                 if(!otpSent){
                     const {data} = await api.post('/api/users/register/send-otp',{
@@ -34,7 +49,6 @@ const Login = () => {
                     toast.success(data.devOtp ? `${data.message} (DEV OTP: ${data.devOtp})` : data.message);
                     return;
                 }
-
                 const {data}=await api.post('/api/users/register', {
                     email: formData.email,
                     otp: formData.otp
@@ -62,6 +76,8 @@ const Login = () => {
             navigate('/app', { replace: true });
         } catch (error) {
             toast(error?.response?.data?.message||error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -96,7 +112,7 @@ const Login = () => {
 
   return (
     <div className='flex items-center justify-center min-h-screen bg-gray-50'>
-        <form onSubmit={handleSubmit} className="sm:w-[350px] w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white">
+        <form noValidate onSubmit={handleSubmit} className="sm:w-[350px] w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white">
                 <h1 className="text-gray-900 text-3xl mt-10 font-medium">{state === "login" ? "Login" : "Sign up"}</h1>
                 <p className="text-gray-500 text-sm mt-2">Please {state} to continue</p>
                 {state !== "login" && (
@@ -145,8 +161,12 @@ const Login = () => {
                         )
                     )}
                 </div>
-                <button type="submit" className="mt-2 w-full h-11 rounded-full text-white bg-green-500 hover:opacity-90 transition-opacity">
-                    {state === "login" ? "Login" : (otpSent ? "Verify & Sign up" : "Send OTP")}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="mt-2 w-full h-11 rounded-full text-white bg-green-500 hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                    {isSubmitting ? "Please wait..." : (state === "login" ? "Login" : (otpSent ? "Verify & Sign up" : "Send OTP"))}
                 </button>
                 <p className="text-gray-500 text-sm mt-3 mb-11">
                     {state === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
