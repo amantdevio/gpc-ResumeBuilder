@@ -84,7 +84,7 @@ const Footer = () => {
                 </div>
                 <div className="mt-8 text-center text-sm text-gray-700">
                     <p className="font-medium">Government Polytechnic College, Sidhi (GPC)</p>
-                    <p className="mt-1">Behind Collectorate Building, Sidhi, Madhya Pradesh - 486661</p>
+                    <p className="mt-1">Panwar, Balhaud - Beohari Rd, Sidhi, Basaudaha, Madhya Pradesh 486661</p>
                     <p className="mt-1">
                         Email: <a href="mailto:polytechnicsidhi@gmail.com" className="text-green-700 hover:underline">polytechnicsidhi@gmail.com</a>
                     </p>
